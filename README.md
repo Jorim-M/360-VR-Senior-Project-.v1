@@ -1,5 +1,5 @@
 # 360-VR-Senior-Project-.v1
-My senior project's first draft.
+My senior year project's first draft.
 
 First time using A-Frame for WebVR project.
 
