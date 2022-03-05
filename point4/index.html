@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>UEAB Virtual Tour | by Parth Bid, Daudi Munema & Jorim Mikobia</title>
+    <meta name="description" content="Senior Project | 360&deg; Virtual Tour">
+    <!-- A-Frame scripts -->
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <!--animation component script-->
+    <script src="https://unpkg.com/aframe-animation-component@^4.1.2/dist/aframe-animation-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.5.1/dist/aframe-look-at-component.min.js"></script>
+
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <!-- Nucleo Icons -->
+    <link href="../main/assets/menu/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="../main/assets/menu/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <link href="../main/assets/menu/css/font-awesome.css" rel="stylesheet" />
+    <link href="../main/assets/menu/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- CSS File for Menu -->
+    <link href="../main/assets/menu/css/menu.css" rel="stylesheet" />
+    <script>
+      AFRAME.registerComponent('hotspots',{
+        init:function(){
+            this.el.addEventListener('reloadspots',function(evt){
+            
+            //get the entire current spot group and scale it to 0
+            var currspotgroup=document.getElementById(evt.detail.currspots);
+            currspotgroup.setAttribute("scale","0 0 0");
+            
+            //get the entire new spot group and scale it to 1
+            var newspotgroup=document.getElementById(evt.detail.newspots);
+            newspotgroup.setAttribute("scale","1 1 1");
+          });
+        }
+      });
+      AFRAME.registerComponent('spot',{
+        schema:{
+          linkto:{type:"string",default:""},
+          spotgroup:{type:"string",default:""}
+        },
+        init:function(){
+          
+          //add image source of hotspot icon
+          this.el.setAttribute("src","#hotspot");
+          //make the icon look at the camera all the time
+          this.el.setAttribute("look-at","#cam");
+          
+          var data=this.data;
+          
+          this.el.addEventListener('click',function(){
+            //set the skybox source to the new image as per the spot
+            var sky=document.getElementById("skybox");
+            sky.setAttribute("src",data.linkto);
+            
+            var spotcomp=document.getElementById("spots");
+            var currspots=this.parentElement.getAttribute("id");
+            //create event for spots component to change the spots data
+            spotcomp.emit('reloadspots',{newspots:data.spotgroup,currspots:currspots});
+          });
+        }
+      });
+    </script>  
+  </head>
+  <body>
+    <!-- Navbar/Menu -->
+    <nav id="navbar-main" class="navbar py-1 navbar-main navbar-expand-lg bg-default navbar-dark headroom">
+    <div class="container">
+      <a class="navbar-brand mr-lg-5" href="../index.html">
+        Home
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_global" aria-controls="navbar_global" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="navbar-collapse collapse" id="navbar_global">
+        <div class="navbar-collapse-header">
+          <div class="row">
+            <div class="col-6 collapse-brand">
+              <a href="../index.html">
+                Home<!-- 
+                        Second 'Home' link for collapsed menu in mobile viewport
+                     -->
+              </a>
+            </div>
+            <div class="col-6 collapse-close">
+              <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar_global" aria-controls="navbar_global" aria-expanded="false" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <ul class="navbar-nav navbar-nav-hover align-items-lg-center ml-lg-auto">
+          <li class="nav-item dropdown">
+            <a href="javascript:;" class="nav-link" data-toggle="dropdown" role="button">
+              <i class="ni ni-pin-3 text-info d-lg-none"></i>
+              <span class="nav-link-inner--text">Locations</span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="../../vr/main/">
+                <i class="ni ni-pin-3 text-yellow"></i><!-- This is the icon part-->
+                Location 1
+              </a>
+              <a class="dropdown-item" href="../../vr/point2/">
+                <i class="ni ni-pin-3 text-danger"></i><!-- Icon -->
+                Location 2
+              </a>
+              <a class="dropdown-item" href="../../vr/point3/">
+                <i class="ni ni-pin-3 text-primary"></i><!-- Icon -->
+                Location 3
+              </a>
+              <a class="dropdown-item" href="../../vr/point4/">
+                <i class="ni ni-pin-3 text-danger"></i><!-- Icon -->
+                Location 4
+              </a>
+              <!-- <a class="dropdown-item" href="javascript:;">
+                <i class="ni ni-pin-3 text-purple"></i>
+                Location 5
+              </a> -->
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- End of Navbar/Menu -->
+  <!-- //////////////////////////// Main VR Part ///////////////////////////// -->
+    <a-scene background="color: #FAFAFA">
+      
+      <a-assets>
+      <img id="hotspot" src="img/group2.png" style="width: auto; height: auto;">
+      <img id="point1" src="img/trial-1.jpg"/>
+        <img id="point2" src="img/trial-2.jpg"/>
+        <img id="point3" src="img/trial-3.jpg"/>
+        <img id="point4" src="img/trial-4.jpg"/> 
+      </a-assets>
+      
+      <a-sky id="skybox" src="#point4"> </a-sky>
+      
+    <a-entity id="cam" camera position="0 2.6 0" look-controls>
+        <a-entity cursor="fuse:true;fuseTimeout:2000"
+                  geometry="primitive:ring;radiusInner:0.01;radiusOuter:0.02"
+                  position="0 0 -1.8"
+                  material="shader:flat;color:#ffdf2b"
+                  animation__mouseenter="property:scale;to:3 3 3;startEvents:mouseenter;endEvents:mouseleave;dir:reverse;dur:1500;loop:1">
+        </a-entity>
+    </a-entity>
+    <a-entity id="spots" hotspots>
+        <a-entity id="group-point4">
+          <a-image spot="linkto:#point1;spotgroup:group-point1" position="0 0 -10"></a-image>
+        </a-entity>
+
+        <a-entity id="group-point2" scale="0 0 0">
+          <a-image spot="linkto:#point1;spotgroup:group-point1" position="13 3 -3"></a-image>
+          <a-image spot="linkto:#point3;spotgroup:group-point3" position="-13 2 3"></a-image>
+        </a-entity>
+
+        <a-entity id="group-point3" scale="0 0 0">
+          <a-image spot="linkto:#point2;spotgroup:group-point2" position="10 0 3"></a-image>
+          <a-image spot="linkto:#point4;spotgroup:group-point4" position="0 0 -13"></a-image>
+        </a-entity>
+
+        <a-entity id="group-point1" scale="0 0 0">
+          <a-image spot="linkto:#point2;spotgroup:group-point2" position="7 -3 -13"></a-image>
+        </a-entity>
+</a-entity>
+    </a-scene>
+    <!-- ////////////////////// End of Main VR Part ////////////////////// -->
+    <!-- Javascript for Menu part -->
+  <script src="../main/assets/menu/js/core/jquery.min.js" type="text/javascript"></script>
+  <script src="../main/assets/menu/js/core/popper.min.js" type="text/javascript"></script>
+  <script src="../main/assets/menu/js/core/bootstrap.min.js" type="text/javascript"></script>
+  <script src="../main/assets/menu/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+  <script src="../main/assets/menu/js/plugins/bootstrap-switch.js"></script>
+  <script src="../main/assets/menu/js/plugins/nouislider.min.js" type="text/javascript"></script>
+  <script src="../main/assets/menu/js/plugins/moment.min.js"></script>
+  </body>
+</html>
